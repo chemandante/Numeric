@@ -1,14 +1,18 @@
 #!/usr/bin/python3
+import sys
 
 from math import isqrt
+
 from sympy.ntheory import factorint
-from sys import argv, exit
 
 # Set for numbers that can't be represented as sum of two squares
 noSum2sq = set()
 
 
 def decomposeBy2(num: int, a_max: int = 0) -> list:
+    # `num` can not be expressed as sum of two squares when num == 3 mod 4
+    if num & 3 == 3:
+        return None
     # Check if we've already decomposed num
     if num in noSum2sq:
         return None
@@ -18,12 +22,6 @@ def decomposeBy2(num: int, a_max: int = 0) -> list:
             return [()]  # Empty tuple, because there are no non-zero summands
         case 1:
             return [(1,)]
-        case 2:
-            return [(1,1)]
-    # `num` can not be expressed as sum of two squares when num == 3 mod 4
-    if num & 3 == 3:
-        noSum2sq.add(num)
-        return None
     # Due to sum of two squares theorem:
     # An integer greater than one can be written as a sum of two squares if and only if its
     # prime decomposition contains no factor p**k, where prime p == 3 mod 4 and `k` is odd
@@ -109,43 +107,44 @@ def stopAndPrintUsage():
     print("Calculating all possible decompositions of integer N by sum of 2, 3 or 4 squares.\n")
     print("Usage:")
     print("python sum_squares.py < -2| -3| -4> <integer N>")
-    exit(1)
+    sys.exit(1)
 
 
-if len(argv) < 3:
-    stopAndPrintUsage()
-
-number = int(argv[2])
-if number < 1:
-    print("Number must be natural, i.e. N >= 1")
-    exit(0)
-
-match argv[1]:
-    case "-2":
-        deco = decomposeBy2(number)
-        if not deco:
-            print(f"{number} can not be expressed as sum of two squares due to sum of two squares theorem.")
-            exit(0)
-    case "-3":
-        deco = decomposeBy3(number)
-        if not deco:
-            print(f"{number} can not be expressed as sum of three squares due to Legendre's three-square theorem.")
-            exit(0)
-    case "-4":
-        deco = decomposeBy4(number)
-    case _:
+if __name__ == '__main__':
+    if len(sys.argv) < 3:
         stopAndPrintUsage()
 
-print(f"Total {len(deco)} decompositions found:")
+    number = int(sys.argv[2])
+    if number < 1:
+        print("Number must be natural, i.e. N >= 1")
+        sys.exit(0)
 
-for d in deco:
-    sm = 0
-    for di in d:
-        sm += di * di
-    if sm == number:
-        print(f"{d[0]}²", end="")
-        for sm in d[1:]:
-            print(f"+{sm}²", end="")
-        print()
-    else:
-        print(f"Error in decomposition of {number} as {d}")
+    match sys.argv[1]:
+        case "-2":
+            deco = decomposeBy2(number)
+            if not deco:
+                print(f"{number} can not be expressed as sum of two squares due to sum of two squares theorem.")
+                sys.exit(0)
+        case "-3":
+            deco = decomposeBy3(number)
+            if not deco:
+                print(f"{number} can not be expressed as sum of three squares due to Legendre's three-square theorem.")
+                sys.exit(0)
+        case "-4":
+            deco = decomposeBy4(number)
+        case _:
+            stopAndPrintUsage()
+
+    print(f"Total {len(deco)} decompositions found:")
+
+    for d in deco:
+        sm = 0
+        for di in d:
+            sm += di * di
+        if sm == number:
+            print(f"{d[0]}²", end="")
+            for sm in d[1:]:
+                print(f"+{sm}²", end="")
+            print()
+        else:
+            print(f"Error in decomposition of {number} as {d}")

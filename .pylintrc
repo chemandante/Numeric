@@ -8,8 +8,7 @@ enable=useless-suppression
 disable=invalid-name,
         missing-class-docstring,
         missing-function-docstring,
-        missing-module-docstring,
-        syntax-error
+        missing-module-docstring
 
 # Good variable names regexes, separated by a comma. If names match any regex,
 # they will always be accepted
