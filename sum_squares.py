@@ -8,12 +8,18 @@ from sys import argv, exit
 noSum2sq = set()
 
 
-def decomposeBy2(num: int, a_max: int = 0) -> dict:
+def decomposeBy2(num: int, a_max: int = 0) -> list:
     # Check if we've already decomposed num
     if num in noSum2sq:
-        print(f"{num} can't be sum2sq")
         return None
-
+    # Check for obvious values
+    match num:
+        case 0:
+            return [()]  # Empty tuple, because there are no non-zero summands
+        case 1:
+            return [(1,)]
+        case 2:
+            return [(1,1)]
     # `num` can not be expressed as sum of two squares when num == 3 mod 4
     if num & 3 == 3:
         noSum2sq.add(num)
@@ -46,7 +52,11 @@ def decomposeBy2(num: int, a_max: int = 0) -> dict:
     return res
 
 
-def decomposeBy3(num: int, a_max: int = 0) -> dict:
+def decomposeBy3(num: int, a_max: int = 0) -> list:
+    # Check for obvious case
+    if num == 0:
+        return [()]  # Empty tuple, because there are no non-zero summands
+
     # Due to Legendre's three-square theorem:
     # Natural number `N` can be represented as the sum of three squares of integers
     # if and only if it is NOT of the form N = 4**a * (8 * b + 7) for nonnegative integers a and b.
@@ -59,7 +69,7 @@ def decomposeBy3(num: int, a_max: int = 0) -> dict:
     # If we got here, `num` can be expressed as sum of three squares. Let's find all these sums.
     # We check all first summand starting from a = floor(sqrt(n)) but not greater than `a_max`
     # down to b = ceil(sqrt(n/3)) (included)
-    a, b = isqrt(num), isqrt(num // 3 - 1) + 1
+    a, b = isqrt(num), isqrt(num // 3 - 1) + 1 if num >= 3 else 1
     if a_max != 0 and a > a_max:
         a = a_max
     res = []
@@ -74,13 +84,13 @@ def decomposeBy3(num: int, a_max: int = 0) -> dict:
     return res
 
 
-def decomposeBy4(num: int, a_max: int = 0) -> dict:
+def decomposeBy4(num: int, a_max: int = 0) -> list:
     # It should be noted that due to Lagrange's four-square theorem ALL natural numbers
     # CAN be represented as sum of four squares
 
     # We check all first summand starting from a = floor(sqrt(n)) but not greater than `a_max`
     # down to b = ceil(sqrt(n/4)) (included)
-    a, b = isqrt(num), isqrt((num >> 2) - 1) + 1
+    a, b = isqrt(num), isqrt((num >> 2) - 1) + 1 if num >= 4 else 1
     if a_max != 0 and a > a_max:
         a = a_max
     res = []
@@ -106,6 +116,9 @@ if len(argv) < 3:
     stopAndPrintUsage()
 
 number = int(argv[2])
+if number < 1:
+    print("Number must be natural, i.e. N >= 1")
+    exit(0)
 
 match argv[1]:
     case "-2":
