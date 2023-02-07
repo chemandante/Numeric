@@ -5,7 +5,8 @@ fail-under=9.0
 
 enable=useless-suppression
 
-disable=invalid-name,
+disable=import-error,
+        invalid-name,
         missing-class-docstring,
         missing-function-docstring,
         missing-module-docstring
