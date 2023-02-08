@@ -20,7 +20,6 @@ def calcDecompositionsBy4Count(num: int) -> int:
     :param num: Positive integer
     :return: Number of possible decompositions
     """
-
     div = divisors(num)
     if num & 1 == 1:  # if `num` is odd
         return 8 * sum(div)
@@ -68,15 +67,22 @@ class TestSumSquares(unittest.TestCase):
 
     def testDecompositionBy4(self):
         for i in self.nums:
-            decs = calcDecompositionsBy4Count(i)
-            deco = decomposeBy4(i)
-            for d in deco:
-                s = 0
-                for x in d:
-                    s += x * x
-                self.assertEqual(s, i)  # Calc sum of squares and compare with original number
-                decs -= countRepresentationsOfDeco4(d)  # Subtracting number of representations of particular tuple
-        self.assertEqual(decs, 0)
+            with self.subTest(i=i):
+                decs = calcDecompositionsBy4Count(i)
+                deco = decomposeBy4(i)
+                deco_set = set(deco)
+                self.assertEqual(len(deco), len(deco_set))
+
+                for d in deco:
+                    p = d[0]
+                    s = p * p
+                    for x in d[1:]:
+                        self.assertGreaterEqual(p, x)  # Make sure components are sorted
+                        p = x
+                        s += x * x
+                    self.assertEqual(s, i)  # Calc sum of squares and compare with original number
+                    decs -= countRepresentationsOfDeco4(d)  # Subtracting number of representations of particular tuple
+                self.assertEqual(decs, 0)
 
 
 if __name__ == '__main__':
