@@ -1,6 +1,6 @@
 #!/usr/bin/python3
+import os
 import sys
-
 from math import isqrt
 
 from sympy.ntheory import factorint
@@ -12,10 +12,10 @@ noSum2sq = set()
 def decomposeBy2(num: int, a_max: int = 0) -> list:
     # `num` can not be expressed as sum of two squares when num == 3 mod 4
     if num & 3 == 3:
-        return None
+        return []
     # Check if we've already decomposed num
     if num in noSum2sq:
-        return None
+        return []
     # Check for obvious values
     match num:
         case 0:
@@ -29,7 +29,7 @@ def decomposeBy2(num: int, a_max: int = 0) -> list:
     for p, k in p_fact.items():
         if p & 3 == 3 and k & 1 == 1:
             noSum2sq.add(num)
-            return None
+            return []
     # If we got here, `num` can be expressed as sum of two squares. Let's find all these sums.
     # We check all numbers starting from a = floor(sqrt(n)) but not greater than `a_max`
     # down to b = ceil(sqrt(n/2)) (included)
@@ -62,7 +62,7 @@ def decomposeBy3(num: int, a_max: int = 0) -> list:
     while m & 3 == 0:  # Divide by 4 as long as it is possible
         m >>= 2
     if m & 7 == 7:  # Check value modulo 8
-        return None
+        return []
 
     # If we got here, `num` can be expressed as sum of three squares. Let's find all these sums.
     # We check all first summand starting from a = floor(sqrt(n)) but not greater than `a_max`
@@ -107,7 +107,13 @@ def stopAndPrintUsage():
     print("Calculating all possible decompositions of integer N by sum of 2, 3 or 4 squares.\n")
     print("Usage:")
     print("python sum_squares.py < -2| -3| -4> <integer N>")
-    sys.exit(1)
+    exit_ex(1)
+
+
+def exit_ex(exit_code: int):
+    if "PYCHARM_HOSTED" not in os.environ:
+        input("Press Enter to continue...")
+    sys.exit(exit_code)
 
 
 if __name__ == '__main__':
@@ -117,22 +123,23 @@ if __name__ == '__main__':
     number = int(sys.argv[2])
     if number < 1:
         print("Number must be natural, i.e. N >= 1")
-        sys.exit(0)
+        exit_ex(0)
 
     match sys.argv[1]:
         case "-2":
             deco = decomposeBy2(number)
             if not deco:
-                print(f"{number} can not be expressed as sum of two squares due to sum of two squares theorem.")
-                sys.exit(0)
+                print(f"{number} can not be expressed as sum of two squares due to corresponding theorem.")
+                exit_ex(0)
         case "-3":
             deco = decomposeBy3(number)
             if not deco:
                 print(f"{number} can not be expressed as sum of three squares due to Legendre's three-square theorem.")
-                sys.exit(0)
+                exit_ex(0)
         case "-4":
             deco = decomposeBy4(number)
         case _:
+            deco = []
             stopAndPrintUsage()
 
     print(f"Total {len(deco)} decompositions found:")
@@ -148,3 +155,5 @@ if __name__ == '__main__':
             print()
         else:
             print(f"Error in decomposition of {number} as {d}")
+
+    exit_ex(0)

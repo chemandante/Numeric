@@ -63,7 +63,7 @@ class TestSumSquares(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.nums = (1, 2, 3, 4, 10, 77, 2023, 2025)
+        cls.nums = (1, 2, 3, 4, 10, 77, 2023, 2024, 2025)
 
     def testDecompositionBy4(self):
         for i in self.nums:
